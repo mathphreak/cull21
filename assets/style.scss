@@ -1,0 +1,66 @@
+@import url('https://fonts.googleapis.com/css?family=Rubik');
+
+$sand: #D2CCA1;
+$blue: #387780;
+$grey: #DBD4D3;
+$red: #E83151;
+$purple: #735193;
+
+// base CSS from http://bettermotherfuckingwebsite.com/
+body {
+  margin: 40px auto;
+  max-width: 650px;
+  line-height: 1.6;
+  font-size: 18px;
+  font-family: sans-serif;
+  color: #444;
+  background-color: #EEE;
+  padding: 0 10px;
+}
+
+h1, h2, h3 {
+  line-height: 1.2
+}
+
+.blue {
+  color: $blue;
+}
+
+.red {
+  color: $red;
+}
+
+.purple {
+  color: $purple;
+}
+
+#hero {
+  img {
+    width: 100%;
+  }
+  p {
+    font-size: 150%;
+  }
+}
+
+#c2a {
+  text-align: center;
+  a {
+    font-size: 150%;
+    border-radius: 0.5em;
+    padding: 0.5em;
+    background-color: $purple;
+    color: white;
+    text-decoration: none;
+  }
+}
+
+header {
+  position: relative;
+  text-align: right;
+  img {
+    position: absolute;
+    height: 100%;
+    left: 0px;
+  }
+}

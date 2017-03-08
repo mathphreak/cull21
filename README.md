@@ -1,36 +1,24 @@
 # Cull21
 
-## Getting Started
+## CONCEPT
+Choices are good, but too many choices are frustrating (paradox of choice?).
+Given a pool, randomly pick two and let the user decide on one.
 
-After you have cloned this repo, run this setup script to set up your machine
-with the necessary dependencies to run and test this app:
+## NAME
+Came up with some ideas, settled on Cull21 (Cull To One, since it's culling your pool of options down to one)
 
-    % ./bin/setup
+## PALETTE
+Coolors kicks butt. Spammed random for a while, got a purple I liked, iterated down until I liked [the palette](https://coolors.co/d2cca1-387780-dbd4d3-e83151-735193).
 
-It assumes you have a machine equipped with Ruby, Postgres, etc. If not, set up
-your machine with [this script].
+* `#​D2CCA1`
+* `#​387780`
+* `#​DBD4D3`
+* `#​E83151`
+* `#​735193`
 
-[this script]: https://github.com/thoughtbot/laptop
+## LOGO
+I whipped up [a thing](https://www.figma.com/file/dPqtALFRjloPTlgYle0anyDj/Logo) in Figma because I can't necessarily run Inkscape on my Chromebook very effectively.
+For type, I just somewhat arbitrarily picked Rubik off Google Fonts.
 
-After setting up, you can run the application using [Heroku Local]:
-
-    % heroku local
-
-[Heroku Local]: https://devcenter.heroku.com/articles/heroku-local
-
-## Guidelines
-
-Use the following guides for getting things done, programming well, and
-programming in style.
-
-* [Protocol](http://github.com/thoughtbot/guides/blob/master/protocol)
-* [Best Practices](http://github.com/thoughtbot/guides/blob/master/best-practices)
-* [Style](http://github.com/thoughtbot/guides/blob/master/style)
-
-## Deploying
-
-If you have previously run the `./bin/setup` script,
-you can deploy to staging and production with:
-
-    $ ./bin/deploy staging
-    $ ./bin/deploy production
+## STACK
+I wound up choosing Sinatra because Rails wasn't getting me anywhere.
