@@ -21,11 +21,11 @@ end
 # Add some utilities to Thread instances.
 class Google::Apis::GmailV1::Thread
   def subject
-    messages[0].payload.headers.find { |h| h.name == 'Subject' }.value
+    messages[0].subject
   end
 
   def from
-    from_raw = messages[0].payload.headers.find { |h| h.name == 'From' }.value
+    from_raw = messages[0].from
     from = Mail::Address.new(from_raw)
     from.display_name || from.address
   end
@@ -34,12 +34,35 @@ class Google::Apis::GmailV1::Thread
     messages[0].snippet
   end
 
-  def first_message_id
-    messages[0].id
+  def haml_object_ref
+    'thread'
+  end
+
+  def mark_unread_url
+    "/unread/#{id}"
+  end
+
+  def archive_url
+    "/archive/#{id}"
+  end
+end
+
+# Add some utilities to Message instances.
+class Google::Apis::GmailV1::Message
+  def subject
+    payload.headers.find { |h| h.name == 'Subject' }.value
+  end
+
+  def from
+    payload.headers.find { |h| h.name == 'From' }.value
+  end
+
+  def render_url
+    "/render/#{id}"
   end
 
   def haml_object_ref
-    'thread'
+    'message'
   end
 end
 
@@ -48,6 +71,7 @@ get '/' do
 end
 
 get '/style.css' do
+  last_modified File.mtime("assets/style.scss")
   scss :style, style: :expanded
 end
 
@@ -77,17 +101,25 @@ end
 
 get '/cull' do
   redirect to('/oauth2callback') unless session.key?(:credentials)
-  client_opts = JSON.parse(session[:credentials])
-  auth_client = Signet::OAuth2::Client.new(client_opts)
-  gmail = Google::Apis::GmailV1::GmailService.new
-  opts = { authorization: auth_client }
-  threads = gmail.list_user_threads('me', label_ids: 'INBOX',
-                                          options: opts).threads
-  threads = threads.sample(2)
-  @threads = threads.map do |t|
-    gmail.get_user_thread('me', t.id, format: 'metadata', options: opts)
+  begin
+    client_opts = JSON.parse(session[:credentials])
+    auth_client = Signet::OAuth2::Client.new(client_opts)
+    gmail = Google::Apis::GmailV1::GmailService.new
+    opts = { authorization: auth_client }
+    threads = gmail.list_user_threads('me', label_ids: 'INBOX',
+                                            options: opts).threads
+    threads = threads.sample(2)
+    @threads = threads.map do |t|
+      gmail.get_user_thread('me', t.id, format: 'metadata', options: opts)
+    end
+    haml :cull
+  rescue ArgumentError => e
+    if e.message == "Missing authorization code."
+      redirect to('/oauth2callback')
+    else
+      raise
+    end
   end
-  haml :cull
 end
 
 get '/render/:msg' do |msg_id|
@@ -102,7 +134,31 @@ get '/render/:msg' do |msg_id|
     message.html_part.decoded
   else
     headers \
-      'Content-Type' => 'text/plain'
+      'Content-Type' => message.content_type || 'text/plain'
     message.body.decoded
   end
+end
+
+post '/unread/:thread' do |thread_id|
+  redirect to('/oauth2callback') unless session.key?(:credentials)
+  client_opts = JSON.parse(session[:credentials])
+  auth_client = Signet::OAuth2::Client.new(client_opts)
+  gmail = Google::Apis::GmailV1::GmailService.new
+  opts = { authorization: auth_client }
+  request = Google::Apis::GmailV1::ModifyThreadRequest.new
+  request.update!(add_label_ids: ["UNREAD"])
+  gmail.modify_thread('me', thread_id, request, options: opts)
+  redirect to('/cull')
+end
+
+post '/archive/:thread' do |thread_id|
+  redirect to('/oauth2callback') unless session.key?(:credentials)
+  client_opts = JSON.parse(session[:credentials])
+  auth_client = Signet::OAuth2::Client.new(client_opts)
+  gmail = Google::Apis::GmailV1::GmailService.new
+  opts = { authorization: auth_client }
+  request = Google::Apis::GmailV1::ModifyThreadRequest.new
+  request.update!(remove_label_ids: ["UNREAD", "INBOX"])
+  gmail.modify_thread('me', thread_id, request, options: opts)
+  redirect to('/cull')
 end
