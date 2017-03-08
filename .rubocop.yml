@@ -1,0 +1,18 @@
+AllCops:
+  Exclude:
+    - db/schema.rb
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+Style/Documentation:
+  Enabled: false
+
+Metrics/LineLength:
+  Max: 100
+
+Metrics/MethodLength:
+  Max: 20
+
+Metrics/BlockLength:
+  Max: 40
