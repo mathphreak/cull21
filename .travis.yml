@@ -1,2 +1,3 @@
 language: ruby
-script: COVERAGE=true bin/rake
+script: bundle exec rubocop
+cache: bundler
