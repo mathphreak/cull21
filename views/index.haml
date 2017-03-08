@@ -14,8 +14,14 @@
         %span.blue cull
         them down
         %span.red to
-        %span.purple one
-        %span> .
-    
+        != succeed "." do
+          %span.purple one
+
+    #info
+      %p
+        Sources currently available:
+        %ul
+          %li Gmail
+
     #c2a
       %a{href: "/cull"} Get started &raquo;

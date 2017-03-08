@@ -64,3 +64,32 @@ header {
     left: 0px;
   }
 }
+
+main {
+  display: flex;
+  flex-flow: row;
+
+  section {
+    display: flex;
+    flex-flow: column;
+
+    border-radius: 0.5em;
+    padding: 0.5em;
+    margin: 0.5em;
+    background-color: $sand;
+
+    h1, h2 {
+      margin-top: 0px;
+    }
+
+    h1 {
+      font-size: 1.5em;
+    }
+
+    h2 {
+      font-size: 1.2em;
+      font-style: italic;
+      text-align: right;
+    }
+  }
+}

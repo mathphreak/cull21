@@ -5,6 +5,8 @@ ruby '2.4.0'
 
 gem 'google-api-client'
 gem 'haml'
+gem 'mail'
+gem 'sass'
 gem 'sinatra'
 
 group :development do

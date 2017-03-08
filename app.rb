@@ -3,10 +3,11 @@ require 'google/apis/gmail_v1'
 require 'google/api_client/client_secrets'
 require 'json'
 require 'sinatra'
+require 'mail'
 
 enable :sessions
 set :session_secret, 'sample text' if settings.development?
-set :haml, format: :html5
+set :haml, format: :html5, escape_html: true
 set :views, scss: 'assets', haml: 'views', default: 'views'
 
 helpers do
@@ -17,16 +18,27 @@ helpers do
   end
 end
 
-# This contains the extensions that I'm using to the Google API client.
-module GAPIExtensions
-  refine Google::Apis::GmailV1::Thread do
-    def subject
-      messages[0].payload.headers.find { |h| h.name == 'Subject' }.value
-    end
+# Add some utilities to Thread instances.
+class Google::Apis::GmailV1::Thread
+  public
+  def subject
+    messages[0].payload.headers.find { |h| h.name == 'Subject' }.value
+  end
+  
+  def from
+    from_raw = messages[0].payload.headers.find { |h| h.name == 'From' }.value
+    from = Mail::Address.new(from_raw)
+    from.display_name || from.address
+  end
+  
+  def snippet
+    messages[0].snippet
+  end
+  
+  def haml_object_ref
+    "thread"
   end
 end
-
-using GAPIExtensions
 
 get '/' do
   haml :index
@@ -66,9 +78,9 @@ get '/cull' do
   auth_client = Signet::OAuth2::Client.new(client_opts)
   gmail = Google::Apis::GmailV1::GmailService.new
   opts = { authorization: auth_client }
-  threads = gmail.list_user_threads('me', label_ids: 'UNREAD', max_results: 10,
+  threads = gmail.list_user_threads('me', label_ids: 'INBOX',
                                           options: opts).threads
-  threads = threads.map { |t| gmail.get_user_thread('me', t.id, options: opts) }
-  @subjects = threads.map(&:subject)
+  threads = threads.sample(2)
+  @threads = threads.map { |t| gmail.get_user_thread('me', t.id, options: opts) }
   haml :cull
 end

@@ -10,8 +10,10 @@
     %header
       %img{src: "/logo-small.svg"}
       %a{href: "/logout"} Logout
-    
+
     %main
-      %ul
-        - @subjects.each do |s|
-          %li= s
+      - @threads.each do |thread|
+        %section[thread]
+          %h1= thread.subject
+          %h2= thread.from
+          %p!= thread.snippet
