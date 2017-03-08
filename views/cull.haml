@@ -16,4 +16,5 @@
         %section[thread]
           %h1= thread.subject
           %h2= thread.from
+          %iframe.loading{src: "/render/#{thread.first_message_id}"}
           %p!= thread.snippet

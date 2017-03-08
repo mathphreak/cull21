@@ -2,3 +2,6 @@ AllCops:
   Exclude:
     - vendor/**/*
   DisplayCopNames: true
+
+Style/ClassAndModuleChildren:
+  Enabled: false

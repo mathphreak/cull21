@@ -78,8 +78,12 @@ main {
     margin: 0.5em;
     background-color: $sand;
 
-    h1, h2 {
+    h1, h2, p {
       margin-top: 0px;
+    }
+    
+    :last-child {
+      margin-bottom: 0px;
     }
 
     h1 {

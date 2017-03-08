@@ -20,23 +20,26 @@ end
 
 # Add some utilities to Thread instances.
 class Google::Apis::GmailV1::Thread
-  public
   def subject
     messages[0].payload.headers.find { |h| h.name == 'Subject' }.value
   end
-  
+
   def from
     from_raw = messages[0].payload.headers.find { |h| h.name == 'From' }.value
     from = Mail::Address.new(from_raw)
     from.display_name || from.address
   end
-  
+
   def snippet
     messages[0].snippet
   end
-  
+
+  def first_message_id
+    messages[0].id
+  end
+
   def haml_object_ref
-    "thread"
+    'thread'
   end
 end
 
@@ -81,6 +84,25 @@ get '/cull' do
   threads = gmail.list_user_threads('me', label_ids: 'INBOX',
                                           options: opts).threads
   threads = threads.sample(2)
-  @threads = threads.map { |t| gmail.get_user_thread('me', t.id, options: opts) }
+  @threads = threads.map do |t|
+    gmail.get_user_thread('me', t.id, format: 'metadata', options: opts)
+  end
   haml :cull
+end
+
+get '/render/:msg' do |msg_id|
+  redirect to('/oauth2callback') unless session.key?(:credentials)
+  client_opts = JSON.parse(session[:credentials])
+  auth_client = Signet::OAuth2::Client.new(client_opts)
+  gmail = Google::Apis::GmailV1::GmailService.new
+  opts = { authorization: auth_client }
+  message = gmail.get_user_message('me', msg_id, format: 'raw', options: opts)
+  message = Mail.read_from_string(message.raw)
+  if message.multipart?
+    message.html_part.decoded
+  else
+    headers \
+      'Content-Type' => 'text/plain'
+    message.body.decoded
+  end
 end
