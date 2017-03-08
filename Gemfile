@@ -49,6 +49,7 @@ group :test do
   gem 'database_cleaner'
   gem 'formulaic'
   gem 'launchy'
+  gem 'rake'
   gem 'shoulda-matchers'
   gem 'simplecov', require: false
   gem 'timecop'

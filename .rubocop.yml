@@ -1,6 +1,7 @@
 AllCops:
   Exclude:
     - db/schema.rb
+  DisplayCopNames: true
 
 Style/FrozenStringLiteralComment:
   Enabled: false
