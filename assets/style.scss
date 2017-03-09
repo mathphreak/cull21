@@ -8,7 +8,7 @@ $purple: #735193;
 
 // base CSS from http://bettermotherfuckingwebsite.com/
 body {
-  margin: 40px auto;
+  margin: 1em;
   line-height: 1.6;
   font-size: 18px;
   font-family: sans-serif;
@@ -64,6 +64,7 @@ header {
   flex-flow: row;
   justify-content: space-between;
   text-transform: uppercase;
+  margin-bottom: 2em;
 
   a:first-child {
     position: relative;
@@ -84,10 +85,7 @@ main {
     max-width: 768px;
     flex: 1;
 
-    border-radius: 0.5em;
-    padding: 0.5em;
-    margin: 0.5em;
-    background-color: $sand;
+    padding: 1em;
 
     &.ready:not(.selected) {
       cursor: pointer;
@@ -95,10 +93,6 @@ main {
 
     h1, h2, p {
       margin-top: 0px;
-    }
-
-    :last-child {
-      margin-bottom: 0px;
     }
 
     h1 {
@@ -124,9 +118,7 @@ main {
     }
 
     p {
-      max-height: unset;
-      transition: max-height 1s;
-      overflow: hidden;
+      margin-bottom: 0px;
     }
 
     .details {
@@ -137,7 +129,6 @@ main {
     iframe {
       flex: 1;
       border-width: 0px;
-      background-color: #EEE;
     }
 
     .actions {
@@ -174,11 +165,16 @@ main {
     }
 
     .unread button {
-      @include button-gradient($red);
+      @include button-gradient($blue);
     }
 
     .archive button {
       @include button-gradient($purple);
+    }
+  }
+  &:not(.chosen) {
+    section:first-child {
+      border-right: 1px solid #444;
     }
   }
 
