@@ -1,5 +1,8 @@
 # Cull21
 
+Power through backlogs by making one choice at a time.
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+
 ## CONCEPT
 Choices are good, but too many choices are frustrating (paradox of choice?).
 Given a pool, randomly pick two and let the user decide on one.

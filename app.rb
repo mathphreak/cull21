@@ -128,46 +128,60 @@ get '/cull' do
   rescue ArgumentError => e
     raise unless e.message == 'Missing authorization code.'
     redirect to('/oauth2callback')
+  rescue Signet::AuthorizationError
+    redirect to('/oauth2callback')
   end
 end
 
 get '/render/:msg' do |msg_id|
   redirect to('/oauth2callback') unless session.key?(:credentials)
-  client_opts = JSON.parse(session[:credentials])
-  auth_client = Signet::OAuth2::Client.new(client_opts)
-  gmail = Google::Apis::GmailV1::GmailService.new
-  opts = { authorization: auth_client }
-  message = gmail.get_user_message('me', msg_id, format: 'raw', options: opts)
-  message = Mail.read_from_string(message.raw)
-  if message.multipart?
-    message.html_part.decoded
-  else
-    headers \
-      'Content-Type' => message.content_type || 'text/plain'
-    message.body.decoded
+  begin
+    client_opts = JSON.parse(session[:credentials])
+    auth_client = Signet::OAuth2::Client.new(client_opts)
+    gmail = Google::Apis::GmailV1::GmailService.new
+    opts = { authorization: auth_client }
+    message = gmail.get_user_message('me', msg_id, format: 'raw', options: opts)
+    message = Mail.read_from_string(message.raw)
+    if message.multipart?
+      message.html_part.decoded
+    else
+      headers \
+        'Content-Type' => message.content_type || 'text/plain'
+      message.body.decoded
+    end
+  rescue Signet::AuthorizationError
+    redirect to('/oauth2callback')
   end
 end
 
 post '/unread/:thread' do |thread_id|
   redirect to('/oauth2callback') unless session.key?(:credentials)
-  client_opts = JSON.parse(session[:credentials])
-  auth_client = Signet::OAuth2::Client.new(client_opts)
-  gmail = Google::Apis::GmailV1::GmailService.new
-  opts = { authorization: auth_client }
-  request = Google::Apis::GmailV1::ModifyThreadRequest.new
-  request.update!(add_label_ids: ['UNREAD'])
-  gmail.modify_thread('me', thread_id, request, options: opts)
-  redirect to('/cull')
+  begin
+    client_opts = JSON.parse(session[:credentials])
+    auth_client = Signet::OAuth2::Client.new(client_opts)
+    gmail = Google::Apis::GmailV1::GmailService.new
+    opts = { authorization: auth_client }
+    request = Google::Apis::GmailV1::ModifyThreadRequest.new
+    request.update!(add_label_ids: ['UNREAD'])
+    gmail.modify_thread('me', thread_id, request, options: opts)
+    redirect to('/cull')
+  rescue Signet::AuthorizationError
+    redirect to('/oauth2callback')
+  end
 end
 
 post '/archive/:thread' do |thread_id|
   redirect to('/oauth2callback') unless session.key?(:credentials)
-  client_opts = JSON.parse(session[:credentials])
-  auth_client = Signet::OAuth2::Client.new(client_opts)
-  gmail = Google::Apis::GmailV1::GmailService.new
-  opts = { authorization: auth_client }
-  request = Google::Apis::GmailV1::ModifyThreadRequest.new
-  request.update!(remove_label_ids: %w(UNREAD INBOX))
-  gmail.modify_thread('me', thread_id, request, options: opts)
-  redirect to('/cull')
+  begin
+    client_opts = JSON.parse(session[:credentials])
+    auth_client = Signet::OAuth2::Client.new(client_opts)
+    gmail = Google::Apis::GmailV1::GmailService.new
+    opts = { authorization: auth_client }
+    request = Google::Apis::GmailV1::ModifyThreadRequest.new
+    request.update!(remove_label_ids: %w(UNREAD INBOX))
+    gmail.modify_thread('me', thread_id, request, options: opts)
+    redirect to('/cull')
+  rescue Signet::AuthorizationError
+    redirect to('/oauth2callback')
+  end
 end
