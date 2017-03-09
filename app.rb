@@ -126,9 +126,12 @@ get '/cull' do
     auth_client = Signet::OAuth2::Client.new(client_opts)
     gmail = Google::Apis::GmailV1::GmailService.new
     opts = { authorization: auth_client }
-    threads = gmail.list_user_threads('me', label_ids: 'INBOX',
-                                            options: opts).threads
-    threads = threads.sample(2)
+    list = gmail.list_user_threads('me', label_ids: 'INBOX', options: opts)
+    @remaining = list.result_size_estimate
+    if @remaining > list.threads.length
+      @remaining = "~" + @remaining.to_s
+    end
+    threads = list.threads.sample(2)
     @threads = threads.map do |t|
       gmail.get_user_thread('me', t.id, format: 'metadata', options: opts)
     end
@@ -157,6 +160,9 @@ get '/render/:msg' do |msg_id|
         'Content-Type' => message.content_type || 'text/plain'
       message.body.decoded
     end
+  rescue ArgumentError => e
+    raise unless e.message == 'Missing authorization code.'
+    redirect to('/oauth2callback')
   rescue Signet::AuthorizationError
     redirect to('/oauth2callback')
   end
@@ -173,6 +179,9 @@ post '/unread/:thread' do |thread_id|
     request.update!(add_label_ids: ['UNREAD'])
     gmail.modify_thread('me', thread_id, request, options: opts)
     redirect to('/cull')
+  rescue ArgumentError => e
+    raise unless e.message == 'Missing authorization code.'
+    redirect to('/oauth2callback')
   rescue Signet::AuthorizationError
     redirect to('/oauth2callback')
   end
@@ -189,6 +198,9 @@ post '/archive/:thread' do |thread_id|
     request.update!(remove_label_ids: %w(UNREAD INBOX))
     gmail.modify_thread('me', thread_id, request, options: opts)
     redirect to('/cull')
+  rescue ArgumentError => e
+    raise unless e.message == 'Missing authorization code.'
+    redirect to('/oauth2callback')
   rescue Signet::AuthorizationError
     redirect to('/oauth2callback')
   end

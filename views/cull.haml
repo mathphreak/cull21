@@ -9,7 +9,11 @@
     %link{href: "/style.css", rel: "stylesheet"}
   %body
     %header
-      %img{src: "/logo-small.svg"}
+      %a{href: "/"}
+        %img{src: "/logo-small.svg"}
+      %span
+        = @remaining
+        remaining
       %a{href: "/logout"} Logout
 
     %main{class: @threads.length > 1 || "chosen"}

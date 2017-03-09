@@ -60,12 +60,16 @@ h1, h2, h3 {
 }
 
 header {
-  position: relative;
-  text-align: right;
-  img {
-    position: absolute;
-    height: 100%;
-    left: 0px;
+  display: flex;
+  flex-flow: row;
+  justify-content: space-between;
+  text-transform: uppercase;
+
+  a:first-child {
+    position: relative;
+    img {
+      height: 100%;
+    }
   }
 }
 
@@ -163,9 +167,9 @@ main {
     }
 
     @mixin button-gradient($color) {
-      background: linear-gradient(to top, $color, desaturate($color, 15%));
+      background: linear-gradient(to bottom, $color, darken(saturate($color, 15%), 10%));
       &:hover {
-        background: linear-gradient(to top, lighten($color, 10%), desaturate($color, 15%));
+        background: linear-gradient(to bottom, lighten(desaturate($color, 15%), 10%), darken(saturate($color, 15%), 10%));
       }
     }
 
