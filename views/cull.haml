@@ -16,7 +16,9 @@
       - @threads.each do |thread|
         %section{class: @threads.length > 1 || "selected"}[thread]
           %h1= thread.subject
-          %h2= thread.from
+          %h2
+            %span.from= thread.from
+            %span.date= thread.date
           %p!= thread.snippet
           .details
             - thread.messages.each do |msg|

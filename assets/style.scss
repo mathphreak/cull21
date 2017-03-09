@@ -103,8 +103,20 @@ main {
 
     h2 {
       font-size: 1.2em;
-      font-style: italic;
       text-align: right;
+    }
+
+    h2 .from {
+      font-style: italic;
+    }
+
+    h2 .date {
+      &::before {
+        content: "(";
+      }
+      &::after {
+        content: ")";
+      }
     }
 
     p {

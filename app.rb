@@ -47,6 +47,10 @@ class Google::Apis::GmailV1::Thread
     messages[0].snippet
   end
 
+  def date
+    messages[0].date
+  end
+
   def haml_object_ref
     'thread'
   end
@@ -68,6 +72,10 @@ class Google::Apis::GmailV1::Message
 
   def from
     payload.headers.find { |h| h.name == 'From' }.value
+  end
+
+  def date
+    Time.at(internal_date.to_i / 1000).strftime '%Y-%m-%d'
   end
 
   def render_url
