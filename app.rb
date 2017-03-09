@@ -31,6 +31,28 @@ CLIENT_SETTINGS = {
 }.freeze
 CLIENT_SECRETS = Google::APIClient::ClientSecrets.new(web: CLIENT_SETTINGS)
 
+# Add some utilities to Time instances.
+class Time
+  def week
+    strftime('%U').to_i
+  end
+
+  def relativize
+    now = Time.now
+    if now.year > year
+      ''
+    elsif now.month > month && now.week > week
+      'this year'
+    elsif now.week > week
+      'this month'
+    elsif now.mday > mday
+      'this week'
+    else
+      'today'
+    end
+  end
+end
+
 # Add some utilities to Thread instances.
 class Google::Apis::GmailV1::Thread
   def subject
@@ -75,7 +97,8 @@ class Google::Apis::GmailV1::Message
   end
 
   def date
-    Time.at(internal_date.to_i / 1000).strftime '%Y-%m-%d'
+    sent = Time.at(internal_date.to_i / 1000)
+    sent.relativize
   end
 
   def render_url
