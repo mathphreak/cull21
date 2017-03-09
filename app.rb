@@ -128,9 +128,7 @@ get '/cull' do
     opts = { authorization: auth_client }
     list = gmail.list_user_threads('me', label_ids: 'INBOX', options: opts)
     @remaining = list.result_size_estimate
-    if @remaining > list.threads.length
-      @remaining = "~" + @remaining.to_s
-    end
+    @remaining = '~' + @remaining.to_s if @remaining > list.threads.length
     threads = list.threads.sample(2)
     @threads = threads.map do |t|
       gmail.get_user_thread('me', t.id, format: 'metadata', options: opts)
