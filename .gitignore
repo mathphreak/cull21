@@ -13,3 +13,4 @@
 /tmp/*
 /client_secrets.json
 /.sass-cache/*
+/passenger.*

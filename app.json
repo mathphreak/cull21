@@ -1,0 +1,48 @@
+{
+  "name": "Cull21",
+  "description": "Helps you power through your inbox one message at a time.",
+  "keywords": [
+    "productivity",
+    "ruby"
+  ],
+  "repository": "https://github.com/mathphreak/cull21",
+  "success_url": "/",
+  "env": {
+    "SECRET_TOKEN": {
+      "description": "A secret key for verifying the integrity of signed cookies.",
+      "generator": "secret"
+    },
+    "GOOGLE_CLIENT_ID": {
+      "description": "Your Google API client ID.",
+      "value": ""
+    },
+    "GOOGLE_AUTH_URI": {
+      "description": "Your Google API authentication URI.",
+      "value": "https://accounts.google.com/o/oauth2/auth"
+    },
+    "GOOGLE_TOKEN_URI": {
+      "description": "Your Google API token URI.",
+      "value": "https://accounts.google.com/o/oauth2/token"
+    },
+    "GOOGLE_CLIENT_SECRET": {
+      "description": "Your Google API client secret.",
+      "value": ""
+    },
+    "GOOGLE_REDIRECT_URI": {
+      "description": "Your Google API redirect URI.",
+      "value": "/oauth2callback"
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "free"
+    }
+  },
+  "image": "heroku/ruby",
+  "buildpacks": [
+    {
+      "url": "heroku/ruby"
+    }
+  ]
+}

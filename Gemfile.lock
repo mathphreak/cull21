@@ -4,10 +4,9 @@ GEM
     addressable (2.5.0)
       public_suffix (~> 2.0, >= 2.0.2)
     ast (2.3.0)
-    daemons (1.2.4)
     declarative (0.0.9)
     declarative-option (0.1.0)
-    eventmachine (1.2.3)
+    dotenv (2.2.0)
     faraday (0.11.0)
       multipart-post (>= 1.2, < 3)
     google-api-client (0.10.0)
@@ -47,6 +46,9 @@ GEM
     os (0.9.6)
     parser (2.4.0.0)
       ast (~> 2.2)
+    passenger (5.1.2)
+      rack
+      rake (>= 0.8.1)
     powerpack (0.1.1)
     public_suffix (2.0.5)
     rack (1.6.5)
@@ -78,10 +80,6 @@ GEM
       rack (~> 1.5)
       rack-protection (~> 1.4)
       tilt (>= 1.3, < 3)
-    thin (1.7.0)
-      daemons (~> 1.0, >= 1.0.9)
-      eventmachine (~> 1.0, >= 1.0.4)
-      rack (>= 1, < 3)
     tilt (2.0.6)
     uber (0.1.0)
     unicode-display_width (1.1.3)
@@ -90,15 +88,16 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  dotenv
   google-api-client
   haml
   mail
+  passenger
   rake
   rubocop
   sass
   shotgun
   sinatra
-  thin
 
 RUBY VERSION
    ruby 2.4.0p0

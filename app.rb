@@ -4,9 +4,13 @@ require 'google/api_client/client_secrets'
 require 'json'
 require 'sinatra'
 require 'mail'
+if settings.development?
+  require 'dotenv'
+  Dotenv.load('.env', '.env.local')
+end
 
 enable :sessions
-set :session_secret, 'sample text' if settings.development?
+set :session_secret, ENV['SECRET_TOKEN']
 set :haml, format: :html5, escape_html: true
 set :views, scss: 'assets', haml: 'views', default: 'views'
 
@@ -17,6 +21,15 @@ helpers do
     super(folder, name, engine, &block)
   end
 end
+
+CLIENT_SETTINGS = {
+  client_id: ENV['GOOGLE_CLIENT_ID'],
+  client_secret: ENV['GOOGLE_CLIENT_SECRET'],
+  auth_uri: ENV['GOOGLE_AUTH_URI'],
+  token_uri: ENV['GOOGLE_TOKEN_URI'],
+  redirect_uri: ENV['GOOGLE_REDIRECT_URI']
+}.freeze
+CLIENT_SECRETS = Google::APIClient::ClientSecrets.new(web: CLIENT_SETTINGS)
 
 # Add some utilities to Thread instances.
 class Google::Apis::GmailV1::Thread
@@ -71,13 +84,12 @@ get '/' do
 end
 
 get '/style.css' do
-  last_modified File.mtime("assets/style.scss")
+  last_modified File.mtime('assets/style.scss')
   scss :style, style: :expanded
 end
 
 get '/oauth2callback' do
-  client_secrets = Google::APIClient::ClientSecrets.load
-  auth_client = client_secrets.to_authorization
+  auth_client = CLIENT_SECRETS.to_authorization
   auth_client.update!(
     scope: 'https://mail.google.com/',
     redirect_uri: url('/oauth2callback')
@@ -114,11 +126,8 @@ get '/cull' do
     end
     haml :cull
   rescue ArgumentError => e
-    if e.message == "Missing authorization code."
-      redirect to('/oauth2callback')
-    else
-      raise
-    end
+    raise unless e.message == 'Missing authorization code.'
+    redirect to('/oauth2callback')
   end
 end
 
@@ -146,7 +155,7 @@ post '/unread/:thread' do |thread_id|
   gmail = Google::Apis::GmailV1::GmailService.new
   opts = { authorization: auth_client }
   request = Google::Apis::GmailV1::ModifyThreadRequest.new
-  request.update!(add_label_ids: ["UNREAD"])
+  request.update!(add_label_ids: ['UNREAD'])
   gmail.modify_thread('me', thread_id, request, options: opts)
   redirect to('/cull')
 end
@@ -158,7 +167,7 @@ post '/archive/:thread' do |thread_id|
   gmail = Google::Apis::GmailV1::GmailService.new
   opts = { authorization: auth_client }
   request = Google::Apis::GmailV1::ModifyThreadRequest.new
-  request.update!(remove_label_ids: ["UNREAD", "INBOX"])
+  request.update!(remove_label_ids: %w(UNREAD INBOX))
   gmail.modify_thread('me', thread_id, request, options: opts)
   redirect to('/cull')
 end
